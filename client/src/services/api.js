@@ -95,4 +95,13 @@ export const api = {
     request('/demo/clear', {
       method: 'DELETE',
     }),
+
+  // Eco Routes & Commute Planner
+  getRoutePresets: () => request('/routes/presets'),
+
+  calculateRoute: (payload) =>
+    request('/routes/calculate', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
 };

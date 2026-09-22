@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
 import LogActivity from './pages/LogActivity';
 import History from './pages/History';
+import RoutePlanner from './pages/RoutePlanner';
 import { Leaf, Heart, Shield } from 'lucide-react';
 
 import Footer from './components/Footer';
@@ -19,6 +20,7 @@ export default function App() {
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/routes" element={<RoutePlanner />} />
             <Route path="/log-activity" element={<LogActivity />} />
             <Route path="/history" element={<History />} />
             <Route path="*" element={<Navigate to="/" replace />} />

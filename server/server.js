@@ -49,6 +49,7 @@ app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/target', require('./routes/target'));
 app.use('/api/ai', require('./routes/ai'));
 app.use('/api/demo', require('./routes/demo'));
+app.use('/api/routes', require('./routes/routes'));
 
 // 404 & Global Error Handling
 app.use(notFoundHandler);

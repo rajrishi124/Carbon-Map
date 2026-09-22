@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Leaf, LayoutDashboard, PlusCircle, History, Menu, X, Calendar } from 'lucide-react';
+import { Leaf, LayoutDashboard, PlusCircle, History, Menu, X, Calendar, Compass } from 'lucide-react';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -8,6 +8,7 @@ export default function Navbar() {
 
   const navLinks = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+    { name: 'Eco Routes', path: '/routes', icon: Compass },
     { name: 'Log Activity', path: '/log-activity', icon: PlusCircle },
     { name: 'History', path: '/history', icon: History },
   ];

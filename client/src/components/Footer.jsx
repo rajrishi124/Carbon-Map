@@ -141,6 +141,9 @@ export default function Footer() {
               <Link to="/" className="text-slate-400 hover:text-emerald-400 transition-colors">
                 • Dashboard & Trend
               </Link>
+              <Link to="/routes" className="text-slate-400 hover:text-emerald-400 transition-colors">
+                • Eco Route Planner
+              </Link>
               <Link to="/log-activity" className="text-slate-400 hover:text-emerald-400 transition-colors">
                 • Log Carbon Activity
               </Link>
