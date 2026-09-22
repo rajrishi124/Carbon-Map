@@ -5,7 +5,7 @@
 
 **Supporting Vision:** *Track everyday activities, understand your carbon footprint, and discover practical ways to reduce your impact.*
 
-**HACKATHON ID:** `REPLACE_WITH_MY_HACKATHON_ID`
+**HACKATHON ID:** `AZIS-FGXF58`
 
 ---
 
