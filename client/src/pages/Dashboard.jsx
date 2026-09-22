@@ -33,6 +33,15 @@ export default function Dashboard() {
   const [error, setError] = useState(null);
   const [loadingDemo, setLoadingDemo] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+
+  // Running live clock updating every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const showToast = (msg) => {
     setToastMsg(msg);
@@ -135,6 +144,20 @@ export default function Dashboard() {
   const isWeeklyExceeded = (stats?.weeklyTotal || 0) > weeklyLimit;
   const weeklyPercent = weeklyLimit > 0 ? Number((((stats?.weeklyTotal || 0) / weeklyLimit) * 100).toFixed(1)) : 0;
 
+  // Live running formatted date & time (e.g., Tuesday, 22 Sep 2026 | 05:02:25 PM)
+  const formattedLiveDate = currentDateTime.toLocaleDateString('en-US', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+  const formattedLiveTime = currentDateTime.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true,
+  });
+
   return (
     <div className="space-y-8 pb-16">
       {/* Toast Notification */}
@@ -152,21 +175,34 @@ export default function Dashboard() {
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Your Carbon Footprint
             </h1>
-            <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200/60 shadow-xs">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
               Live Tracker
             </span>
           </div>
           <p className="text-sm text-slate-500 font-medium">
             Track your everyday choices and understand the impact.
           </p>
-          {/* Decision Point 3 (DP3): The Week indicator */}
-          <div className="mt-2 flex items-center gap-2 text-xs font-semibold text-emerald-800">
-            <span className="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200/80 inline-flex items-center gap-1.5">
+          {/* Decision Point 3 (DP3): The Week indicator and Live Running Date/Time */}
+          <div className="mt-2.5 flex flex-wrap items-center gap-2 text-xs font-semibold text-emerald-800">
+            <span className="px-2.5 py-1 rounded-xl bg-emerald-50 border border-emerald-200/80 inline-flex items-center gap-1.5 shadow-xs">
               <Calendar className="w-3.5 h-3.5 text-emerald-600" />
-              <span>This Week (Monday → Sunday): <strong>{weekInfo?.formattedRange}</strong></span>
+              <span>This Week (Monday → Sunday): <strong className="font-extrabold text-emerald-900">{weekInfo?.formattedRange}</strong></span>
             </span>
-            <span className="text-slate-400">•</span>
-            <span className="text-slate-600">{weekInfo?.label}</span>
+            <span className="text-slate-300 hidden sm:inline">•</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-white border border-slate-200 shadow-xs text-xs">
+              <span className="font-extrabold text-slate-800 tracking-tight">
+                {formattedLiveDate}
+              </span>
+              <span className="text-slate-300 font-bold">|</span>
+              <span className="inline-flex items-center gap-1.5 font-mono font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200/70 tracking-tight">
+                <Clock className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+                <span>{formattedLiveTime}</span>
+              </span>
+            </div>
           </div>
         </div>
 
