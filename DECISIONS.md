@@ -87,3 +87,22 @@ In corporate sustainability, transportation schedules, and standard ISO 8601 cal
    The dashboard explicitly surfaces progress through both day-of-week context and target pacing:
    - E.g.: `Wednesday • Day 3 of 7 • 12.40 / 38.50 kg (32%) • Daily Limit: 5.50 kg CO₂e`
    - Shows active day, today's emissions vs 5.5 kg daily limit, and remaining carbon allowance before Sunday midnight.
+
+---
+
+## Emission Factors & Parameters (Authoritative Specification)
+
+| Activity | Unit | Carbon Footprint | Category |
+| :--- | :--- | :--- | :--- |
+| 🚗 Car | 1 km | 0.20 kg CO₂e/km | Transport |
+| 🏍️ Bike/Motorcycle | 1 km | 0.10 kg CO₂e/km | Transport |
+| 🚌 Bus | 1 km | 0.08 kg CO₂e/km | Transport |
+| 🚆 Train/Metro | 1 km | 0.04 kg CO₂e/km | Transport |
+| ✈️ Flight | 1 km | 0.25 kg CO₂e/km | Transport |
+| 🔥 LPG | 1 kg | 3.00 kg CO₂e/kg | Electricity / Energy |
+| ⚡ Electricity | 1 kWh | 0.80 kg CO₂e/kWh | Electricity / Energy |
+| 🪵 Wood/Firewood | 1 kg | 1.80 kg CO₂e/kg | Electricity / Energy |
+| 🪨 Coal | 1 kg | 2.40 kg CO₂e/kg | Electricity / Energy |
+| 🥗 Vegetarian Meal | 1 meal | ~1.00 kg CO₂e/meal | Food |
+| 🍗 Non-Vegetarian Meal | 1 meal | ~2.50 kg CO₂e/meal | Food |
+

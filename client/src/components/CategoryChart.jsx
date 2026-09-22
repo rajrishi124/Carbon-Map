@@ -10,12 +10,19 @@ const CATEGORY_COLORS = {
 };
 
 export default function CategoryChart({ categories = [] }) {
-  const total = categories.reduce((sum, item) => sum + (item.value || 0), 0);
+  const activeCategories = categories.map((c) => ({
+    name: c.name,
+    value: c.value || 0,
+    color: CATEGORY_COLORS[c.name] || c.color || '#94A3B8',
+  }));
+
+  const dayTotal = activeCategories.reduce((sum, item) => sum + (item.value || 0), 0);
+  const hasData = dayTotal > 0;
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const data = payload[0];
-      const pct = total > 0 ? ((data.value / total) * 100).toFixed(1) : 0;
+      const pct = dayTotal > 0 ? ((data.value / dayTotal) * 100).toFixed(1) : 0;
       return (
         <div className="bg-slate-900 text-white px-3 py-2 rounded-xl shadow-xl text-xs border border-slate-800">
           <p className="font-semibold text-slate-200">{data.name}</p>
@@ -28,24 +35,20 @@ export default function CategoryChart({ categories = [] }) {
     return null;
   };
 
-  const chartData = categories.map((c) => ({
-    name: c.name,
-    value: c.value,
-    color: CATEGORY_COLORS[c.name] || '#94A3B8',
-  }));
-
-  const hasData = total > 0;
-
   return (
     <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-card flex flex-col justify-between">
       <div>
-        <div className="flex items-center gap-2 mb-1">
-          <PieIcon className="w-5 h-5 text-emerald-600" />
-          <h3 className="text-base font-bold text-slate-900">Category Breakdown</h3>
+        <div className="flex items-start justify-between gap-3 mb-1">
+          <div>
+            <div className="flex items-center gap-2">
+              <PieIcon className="w-5 h-5 text-emerald-600" />
+              <h3 className="text-base font-bold text-slate-900">Category Breakdown</h3>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Emission distribution across Transport, Electricity, & Food
+            </p>
+          </div>
         </div>
-        <p className="text-xs text-slate-500">
-          Emission distribution across Transport, Electricity, & Food
-        </p>
       </div>
 
       <div className="h-56 my-2 relative">
@@ -54,7 +57,12 @@ export default function CategoryChart({ categories = [] }) {
             <div className="w-20 h-20 rounded-full border-4 border-dashed border-slate-200 flex items-center justify-center mb-2">
               <PieIcon className="w-6 h-6 text-slate-300" />
             </div>
-            <span>No emissions logged this week</span>
+            <span className="font-semibold text-slate-600">
+              No emissions logged this week
+            </span>
+            <span className="text-[11px] text-slate-400 mt-0.5">
+              0.00 kg CO₂ recorded
+            </span>
           </div>
         ) : (
           <>
@@ -62,13 +70,13 @@ export default function CategoryChart({ categories = [] }) {
               <PieChart>
                 <Tooltip content={<CustomTooltip />} />
                 <Pie
-                  data={chartData}
+                  data={activeCategories.filter(c => c.value > 0)}
                   innerRadius={55}
                   outerRadius={80}
                   paddingAngle={4}
                   dataKey="value"
                 >
-                  {chartData.map((entry, index) => (
+                  {activeCategories.filter(c => c.value > 0).map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -77,11 +85,13 @@ export default function CategoryChart({ categories = [] }) {
             
             {/* Center label */}
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-xs text-slate-400 font-medium">Total</span>
-              <span className="text-base font-extrabold text-slate-900">
-                {formatCo2(total)}
+              <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                Total
               </span>
-              <span className="text-[10px] text-slate-400">kg CO₂</span>
+              <span className="text-xl font-extrabold text-slate-900 tracking-tight">
+                {formatCo2(dayTotal)}
+              </span>
+              <span className="text-[10px] font-medium text-slate-400">kg CO₂</span>
             </div>
           </>
         )}
@@ -89,13 +99,13 @@ export default function CategoryChart({ categories = [] }) {
 
       {/* Legend & Breakdown stats */}
       <div className="space-y-2 border-t border-slate-100 pt-4">
-        {chartData.map((cat) => {
-          const pct = total > 0 ? ((cat.value / total) * 100).toFixed(0) : 0;
+        {activeCategories.map((cat) => {
+          const pct = dayTotal > 0 ? ((cat.value / dayTotal) * 100).toFixed(0) : 0;
           return (
             <div key={cat.name} className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
                 <span
-                  className="w-3 h-3 rounded-full"
+                  className="w-3 h-3 rounded-full flex-shrink-0"
                   style={{ backgroundColor: cat.color }}
                 />
                 <span className="font-medium text-slate-700">{cat.name}</span>

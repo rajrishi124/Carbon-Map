@@ -9,6 +9,7 @@
     "start:server": "cd server && npm start",
     "build:client": "cd client && npm run build",
     "test": "cd server && npm test",
+    "seed": "cd server && npm run seed",
     "install:all": "npm --prefix server install && npm --prefix client install"
   }
 }

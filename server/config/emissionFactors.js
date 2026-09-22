@@ -12,30 +12,51 @@
 
 const EMISSION_FACTORS = {
   CAR: 0.20,
+  BIKE: 0.10,
   BUS: 0.08,
+  TRAIN: 0.04,
   FLIGHT: 0.25,
+  LPG: 3.00,
   ELECTRICITY: 0.80,
-  VEG_MEAL: 0.50,
-  NON_VEG_MEAL: 2.00,
+  WOOD: 1.80,
+  COAL: 2.40,
+  VEG_MEAL: 1.00,
+  NON_VEG_MEAL: 2.50,
 };
 
 // Activity definitions with display labels, units, factors, category mapping, and DP2 realistic maximum thresholds
 const ACTIVITY_DEFINITIONS = {
   car: {
     key: 'car',
-    label: 'Car Travel',
+    label: 'Car',
     unit: 'km',
     factor: EMISSION_FACTORS.CAR,
     category: 'Transport',
-    maxThreshold: 2000, // DP2: max 2,000 km per activity
+    maxThreshold: 2000,
+  },
+  bike: {
+    key: 'bike',
+    label: 'Bike/Motorcycle',
+    unit: 'km',
+    factor: EMISSION_FACTORS.BIKE,
+    category: 'Transport',
+    maxThreshold: 1500,
   },
   bus: {
     key: 'bus',
-    label: 'Bus Travel',
+    label: 'Bus',
     unit: 'km',
     factor: EMISSION_FACTORS.BUS,
     category: 'Transport',
-    maxThreshold: 1000, // DP2: max 1,000 km per activity
+    maxThreshold: 1000,
+  },
+  train: {
+    key: 'train',
+    label: 'Train/Metro',
+    unit: 'km',
+    factor: EMISSION_FACTORS.TRAIN,
+    category: 'Transport',
+    maxThreshold: 5000,
   },
   flight: {
     key: 'flight',
@@ -43,7 +64,15 @@ const ACTIVITY_DEFINITIONS = {
     unit: 'km',
     factor: EMISSION_FACTORS.FLIGHT,
     category: 'Transport',
-    maxThreshold: 20000, // DP2: max 20,000 km per activity
+    maxThreshold: 20000,
+  },
+  lpg: {
+    key: 'lpg',
+    label: 'LPG',
+    unit: 'kg',
+    factor: EMISSION_FACTORS.LPG,
+    category: 'Electricity',
+    maxThreshold: 100,
   },
   electricity: {
     key: 'electricity',
@@ -51,7 +80,23 @@ const ACTIVITY_DEFINITIONS = {
     unit: 'kWh',
     factor: EMISSION_FACTORS.ELECTRICITY,
     category: 'Electricity',
-    maxThreshold: 5000, // DP2: max 5,000 kWh per activity
+    maxThreshold: 5000,
+  },
+  wood: {
+    key: 'wood',
+    label: 'Wood/Firewood',
+    unit: 'kg',
+    factor: EMISSION_FACTORS.WOOD,
+    category: 'Electricity',
+    maxThreshold: 500,
+  },
+  coal: {
+    key: 'coal',
+    label: 'Coal',
+    unit: 'kg',
+    factor: EMISSION_FACTORS.COAL,
+    category: 'Electricity',
+    maxThreshold: 500,
   },
   veg_meal: {
     key: 'veg_meal',
@@ -59,7 +104,7 @@ const ACTIVITY_DEFINITIONS = {
     unit: 'meals',
     factor: EMISSION_FACTORS.VEG_MEAL,
     category: 'Food',
-    maxThreshold: 50, // DP2: max 50 meals per activity
+    maxThreshold: 50,
   },
   non_veg_meal: {
     key: 'non_veg_meal',
@@ -67,7 +112,7 @@ const ACTIVITY_DEFINITIONS = {
     unit: 'meals',
     factor: EMISSION_FACTORS.NON_VEG_MEAL,
     category: 'Food',
-    maxThreshold: 50, // DP2: max 50 meals per activity
+    maxThreshold: 50,
   },
 };
 

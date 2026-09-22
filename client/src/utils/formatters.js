@@ -6,7 +6,7 @@
 export const ACTIVITY_CONFIG = {
   car: {
     key: 'car',
-    label: 'Car Travel',
+    label: 'Car',
     unit: 'km',
     factor: 0.20,
     category: 'Transport',
@@ -15,9 +15,20 @@ export const ACTIVITY_CONFIG = {
     iconName: 'Car',
     description: 'Private petrol/diesel vehicle travel',
   },
+  bike: {
+    key: 'bike',
+    label: 'Bike/Motorcycle',
+    unit: 'km',
+    factor: 0.10,
+    category: 'Transport',
+    maxThreshold: 1500,
+    color: 'cyan',
+    iconName: 'Bike',
+    description: 'Motorcycle / scooter travel',
+  },
   bus: {
     key: 'bus',
-    label: 'Bus Travel',
+    label: 'Bus',
     unit: 'km',
     factor: 0.08,
     category: 'Transport',
@@ -25,6 +36,17 @@ export const ACTIVITY_CONFIG = {
     color: 'teal',
     iconName: 'Bus',
     description: 'Public city/regional bus transit',
+  },
+  train: {
+    key: 'train',
+    label: 'Train/Metro',
+    unit: 'km',
+    factor: 0.04,
+    category: 'Transport',
+    maxThreshold: 5000,
+    color: 'indigo',
+    iconName: 'Train',
+    description: 'Rail & rapid metro travel',
   },
   flight: {
     key: 'flight',
@@ -37,6 +59,17 @@ export const ACTIVITY_CONFIG = {
     iconName: 'Plane',
     description: 'Commercial air travel',
   },
+  lpg: {
+    key: 'lpg',
+    label: 'LPG',
+    unit: 'kg',
+    factor: 3.00,
+    category: 'Electricity',
+    maxThreshold: 100,
+    color: 'orange',
+    iconName: 'Flame',
+    description: 'Cooking & heating LPG cylinder gas',
+  },
   electricity: {
     key: 'electricity',
     label: 'Electricity',
@@ -48,22 +81,44 @@ export const ACTIVITY_CONFIG = {
     iconName: 'Zap',
     description: 'Residential & workspace power draw',
   },
+  wood: {
+    key: 'wood',
+    label: 'Wood/Firewood',
+    unit: 'kg',
+    factor: 1.80,
+    category: 'Electricity',
+    maxThreshold: 500,
+    color: 'yellow',
+    iconName: 'TreePine',
+    description: 'Firewood fuel combustion',
+  },
+  coal: {
+    key: 'coal',
+    label: 'Coal',
+    unit: 'kg',
+    factor: 2.40,
+    category: 'Electricity',
+    maxThreshold: 500,
+    color: 'slate',
+    iconName: 'Box',
+    description: 'Coal fuel combustion',
+  },
   veg_meal: {
     key: 'veg_meal',
     label: 'Vegetarian Meal',
-    unit: 'meals',
-    factor: 0.50,
+    unit: 'meal',
+    factor: 1.00,
     category: 'Food',
     maxThreshold: 50,
     color: 'green',
     iconName: 'Salad',
-    description: 'Plant-based or lacto-vegetarian meal',
+    description: 'Plant-based or vegetarian meal',
   },
   non_veg_meal: {
     key: 'non_veg_meal',
     label: 'Non-Vegetarian Meal',
-    unit: 'meals',
-    factor: 2.00,
+    unit: 'meal',
+    factor: 2.50,
     category: 'Food',
     maxThreshold: 50,
     color: 'red',
@@ -110,4 +165,12 @@ export function getActivityMeta(typeKey) {
     color: 'slate',
     iconName: 'Activity',
   };
+}
+
+export function toLocalDateStr(date = new Date()) {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }

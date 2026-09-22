@@ -41,6 +41,17 @@ function getWeekDayInfo(refDate = new Date()) {
 }
 
 /**
+ * Formats a Date object into YYYY-MM-DD in local time
+ */
+function toLocalDateStr(date = new Date()) {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+/**
  * Generates personalized supportive nudges based on real category impact (DP1)
  */
 function generateNudge(weeklyTotal, weeklyTarget, categoryBreakdown, topActivities) {
@@ -151,11 +162,11 @@ async function getDashboardData() {
 
   weekActivities.forEach((act) => {
     // Map types to categories
-    if (act.type === 'car' || act.type === 'bus' || act.type === 'flight') {
+    if (['car', 'bike', 'bus', 'train', 'flight'].includes(act.type)) {
       categoryBreakdown.Transport += act.co2;
-    } else if (act.type === 'electricity') {
+    } else if (['electricity', 'lpg', 'wood', 'coal'].includes(act.type)) {
       categoryBreakdown.Electricity += act.co2;
-    } else if (act.type === 'veg_meal' || act.type === 'non_veg_meal') {
+    } else if (['veg_meal', 'non_veg_meal'].includes(act.type)) {
       categoryBreakdown.Food += act.co2;
     }
 
@@ -170,33 +181,53 @@ async function getDashboardData() {
   const trendDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const dailyMap = {};
   
-  // Initialize 7 days with zero
+  // Initialize 7 days with zero using local date string to prevent timezone offset shifts
   trendDays.forEach((dayName, idx) => {
     const dayDate = new Date(monday);
     dayDate.setDate(monday.getDate() + idx);
-    const dateStr = dayDate.toISOString().split('T')[0];
+    const dateStr = toLocalDateStr(dayDate);
     dailyMap[dateStr] = {
       day: dayName.slice(0, 3), // Mon, Tue...
       fullDay: dayName,
       date: dateStr,
       co2: 0,
       activitiesCount: 0,
+      categories: {
+        Transport: 0,
+        Electricity: 0,
+        Food: 0,
+      },
     };
   });
 
   // Aggregate actual week activities by day
   weekActivities.forEach((act) => {
-    const actDateStr = new Date(act.date).toISOString().split('T')[0];
+    const actDateStr = toLocalDateStr(act.date);
     if (dailyMap[actDateStr]) {
       dailyMap[actDateStr].co2 = Number((dailyMap[actDateStr].co2 + act.co2).toFixed(2));
       dailyMap[actDateStr].activitiesCount += 1;
+
+      // Group into Transport, Electricity, Food
+      if (['car', 'bike', 'bus', 'train', 'flight'].includes(act.type)) {
+        dailyMap[actDateStr].categories.Transport = Number(
+          (dailyMap[actDateStr].categories.Transport + act.co2).toFixed(2)
+        );
+      } else if (['electricity', 'lpg', 'wood', 'coal'].includes(act.type)) {
+        dailyMap[actDateStr].categories.Electricity = Number(
+          (dailyMap[actDateStr].categories.Electricity + act.co2).toFixed(2)
+        );
+      } else if (['veg_meal', 'non_veg_meal'].includes(act.type)) {
+        dailyMap[actDateStr].categories.Food = Number(
+          (dailyMap[actDateStr].categories.Food + act.co2).toFixed(2)
+        );
+      }
     }
   });
 
   const trendData = Object.values(dailyMap);
 
   // Today's emissions vs Daily Target
-  const todayStr = now.toISOString().split('T')[0];
+  const todayStr = toLocalDateStr(now);
   const todayTotal = dailyMap[todayStr] ? dailyMap[todayStr].co2 : 0;
   const todayActivitiesCount = dailyMap[todayStr] ? dailyMap[todayStr].activitiesCount : 0;
   const isDailyExceeded = todayTotal > dailyTarget;
@@ -253,4 +284,5 @@ module.exports = {
   getWeekDayInfo,
   getDashboardData,
   generateNudge,
+  toLocalDateStr,
 };

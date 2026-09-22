@@ -20,12 +20,13 @@ import { api } from '../services/api';
 import StatCard from '../components/StatCard';
 import CarbonTrendChart from '../components/CarbonTrendChart';
 import CategoryChart from '../components/CategoryChart';
+import EverydayCategoryDistribution from '../components/EverydayCategoryDistribution';
 import WeeklyTarget from '../components/WeeklyTarget';
 import NudgeBanner from '../components/NudgeBanner';
 import EcoCoach from '../components/EcoCoach';
 import EmptyState from '../components/EmptyState';
 import LoadingState from '../components/LoadingState';
-import { formatCo2, formatDate, getActivityMeta } from '../utils/formatters';
+import { formatCo2, formatDate, getActivityMeta, toLocalDateStr } from '../utils/formatters';
 
 export default function Dashboard() {
   const [dashboardData, setDashboardData] = useState(null);
@@ -131,7 +132,7 @@ export default function Dashboard() {
     : 38.5;
 
   // Compute Today's emission metrics
-  const todayDateStr = new Date().toISOString().split('T')[0];
+  const todayDateStr = toLocalDateStr(new Date());
   const localDayShort = new Date().toLocaleDateString('en-US', { weekday: 'short' });
   const todayTrend = trendData?.find((d) => d.date === todayDateStr || d.day === localDayShort);
   const todayTotal = stats?.todayTotal !== undefined ? stats.todayTotal : (todayTrend?.co2 || 0);
@@ -288,6 +289,12 @@ export default function Dashboard() {
               <CategoryChart categories={categoryBreakdown} />
             </div>
           </div>
+
+          {/* Everyday Category Distribution (7-Day Donut Pie Charts) */}
+          <EverydayCategoryDistribution
+            trendData={trendData}
+            dailyLimit={dailyLimit}
+          />
 
           {/* Target & Eco Coach Row */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

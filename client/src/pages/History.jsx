@@ -18,10 +18,15 @@ import { formatCo2 } from '../utils/formatters';
 
 const ACTIVITY_FILTER_OPTIONS = [
   { value: 'all', label: 'All Activities' },
-  { value: 'car', label: 'Car Travel' },
-  { value: 'bus', label: 'Bus Travel' },
+  { value: 'car', label: 'Car' },
+  { value: 'bike', label: 'Bike/Motorcycle' },
+  { value: 'bus', label: 'Bus' },
+  { value: 'train', label: 'Train/Metro' },
   { value: 'flight', label: 'Flight' },
+  { value: 'lpg', label: 'LPG' },
   { value: 'electricity', label: 'Electricity' },
+  { value: 'wood', label: 'Wood/Firewood' },
+  { value: 'coal', label: 'Coal' },
   { value: 'veg_meal', label: 'Vegetarian Meal' },
   { value: 'non_veg_meal', label: 'Non-Vegetarian Meal' },
 ];

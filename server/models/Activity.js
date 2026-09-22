@@ -5,7 +5,19 @@ const activitySchema = new mongoose.Schema(
     type: {
       type: String,
       required: [true, 'Activity type is required'],
-      enum: ['car', 'bus', 'flight', 'electricity', 'veg_meal', 'non_veg_meal'],
+      enum: [
+        'car',
+        'bike',
+        'bus',
+        'train',
+        'flight',
+        'electricity',
+        'lpg',
+        'wood',
+        'coal',
+        'veg_meal',
+        'non_veg_meal',
+      ],
       trim: true,
     },
     quantity: {

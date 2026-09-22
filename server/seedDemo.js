@@ -1,35 +1,62 @@
-const express = require('express');
-const router = express.Router();
-const Activity = require('../models/Activity');
-const Target = require('../models/Target');
-const { calculateCarbon } = require('../services/carbonCalculator');
-const { getWeekBounds } = require('../services/dashboardService');
-
 /**
- * POST /api/demo/seed
- * Populates realistic demo activities within the current week.
- * Avoids duplicate duplication if demo activities are already present.
+ * MongoDB Demo Data Seeder for CarbonMap
+ * 
+ * Populates realistic carbon activities for the current Monday–Sunday week:
+ * - Transport (Car, Bus)
+ * - Energy (Electricity)
+ * - Food (Vegetarian, Non-Vegetarian)
+ * - Targets: Daily Limit (5.5 kg CO₂e), Weekly Limit (38.5 kg CO₂e)
+ * 
+ * Usage:
+ *   node server/seedDemo.js
+ *   npm run seed
  */
-router.post('/seed', async (req, res, next) => {
-  try {
-    const { monday } = getWeekBounds();
 
-    // When force=true, clear prior demo activities first
-    if (req.query.force) {
-      await Activity.deleteMany({ note: { $regex: /\[Demo\]/i } });
-    } else {
-      const existingDemo = await Activity.find({
-        note: { $regex: /\[Demo\]/i },
-      });
-      if (existingDemo.length > 0) {
-        return res.json({
-          success: true,
-          message: 'Demo data is already loaded for the current week.',
-          data: existingDemo,
-        });
-      }
+const mongoose = require('mongoose');
+const path = require('path');
+const dotenv = require('dotenv');
+const dns = require('dns');
+
+// Configure reliable DNS servers (Google / Cloudflare) to prevent querySrv ECONNREFUSED on Windows
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1', '8.8.4.4']);
+} catch (dnsErr) {
+  // Ignore if not supported in environment
+}
+
+// Load environment variables
+dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+const Activity = require('./models/Activity');
+const Target = require('./models/Target');
+const { calculateCarbon } = require('./services/carbonCalculator');
+const { getWeekBounds } = require('./services/dashboardService');
+
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/carbonmap';
+
+async function seedData() {
+  console.log('====================================================');
+  console.log('       CARBONMAP MONGODB DEMO DATA SEEDER');
+  console.log('====================================================\n');
+  console.log(`Connecting to MongoDB: ${MONGODB_URI}...`);
+
+  try {
+    await mongoose.connect(MONGODB_URI);
+    console.log(`✓ Connected to MongoDB database: ${mongoose.connection.name || 'carbonmap'}\n`);
+
+    // Remove existing demo activities
+    const deleteResult = await Activity.deleteMany({
+      note: { $regex: /\[Demo\]/i },
+    });
+    if (deleteResult.deletedCount > 0) {
+      console.log(`Cleared ${deleteResult.deletedCount} prior demo activities.`);
     }
 
+    const { monday } = getWeekBounds(new Date());
+
+    // Generate date timestamps for each day of the current week
     const getDayDate = (dayOffset, hours, minutes) => {
       const d = new Date(monday);
       d.setDate(monday.getDate() + dayOffset);
@@ -37,7 +64,7 @@ router.post('/seed', async (req, res, next) => {
       return d;
     };
 
-    const demoItems = [
+    const demoActivities = [
       // Monday (Total: 5.40 kg CO₂e)
       { type: 'car', quantity: 10, date: getDayDate(0, 8, 30), note: '[Demo] Morning office commute' },
       { type: 'veg_meal', quantity: 1, date: getDayDate(0, 13, 0), note: '[Demo] Vegetarian cafe lunch' },
@@ -76,7 +103,7 @@ router.post('/seed', async (req, res, next) => {
       { type: 'non_veg_meal', quantity: 1, date: getDayDate(6, 19, 30), note: '[Demo] Sunday non-veg dinner' },
     ];
 
-    const activitiesToSave = demoItems.map((item) => {
+    const activitiesToInsert = demoActivities.map((item) => {
       const calc = calculateCarbon(item.type, item.quantity);
       return {
         type: calc.type,
@@ -89,9 +116,13 @@ router.post('/seed', async (req, res, next) => {
       };
     });
 
-    const savedActivities = await Activity.insertMany(activitiesToSave);
+    const inserted = await Activity.insertMany(activitiesToInsert);
+    const totalCo2 = inserted.reduce((sum, a) => sum + a.co2, 0).toFixed(2);
 
-    // Ensure default weekly target (38.5 kg) and daily target (5.5 kg)
+    console.log(`✓ Successfully inserted ${inserted.length} realistic activities.`);
+    console.log(`✓ Total Week Carbon: ${totalCo2} kg CO₂e\n`);
+
+    // Ensure Target in MongoDB is updated to Daily: 5.5 kg, Weekly: 38.5 kg
     let target = await Target.findOne();
     if (!target) {
       target = await Target.create({ weeklyTarget: 38.5, dailyTarget: 5.5 });
@@ -101,31 +132,20 @@ router.post('/seed', async (req, res, next) => {
       await target.save();
     }
 
-    res.status(201).json({
-      success: true,
-      message: 'Realistic demo activities successfully loaded for the full week!',
-      count: savedActivities.length,
-      data: savedActivities,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+    console.log(`✓ Updated Carbon Limits in MongoDB:`);
+    console.log(`   - Daily Limit:  ${target.dailyTarget.toFixed(2)} kg CO₂e`);
+    console.log(`   - Weekly Limit: ${target.weeklyTarget.toFixed(2)} kg CO₂e\n`);
 
-/**
- * DELETE /api/demo/clear
- * Clears demo or all activities for quick re-testing
- */
-router.delete('/clear', async (req, res, next) => {
-  try {
-    await Activity.deleteMany({});
-    res.json({
-      success: true,
-      message: 'All activities cleared.',
-    });
+    console.log('====================================================');
+    console.log('       DEMO DATA SEEDING COMPLETE!');
+    console.log('====================================================');
   } catch (error) {
-    next(error);
+    console.error('Seeding failed:', error);
+    process.exit(1);
+  } finally {
+    await mongoose.disconnect();
+    process.exit(0);
   }
-});
+}
 
-module.exports = router;
+seedData();

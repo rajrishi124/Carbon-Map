@@ -1,9 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import {
   Car,
+  Bike,
   Bus,
+  Train,
   Plane,
+  Flame,
   Zap,
+  TreePine,
+  Box,
   Salad,
   Utensils,
   PlusCircle,
@@ -18,9 +23,14 @@ import { ACTIVITY_CONFIG, formatCo2 } from '../utils/formatters';
 
 const TYPE_ICONS = {
   car: Car,
+  bike: Bike,
   bus: Bus,
+  train: Train,
   flight: Plane,
+  lpg: Flame,
   electricity: Zap,
+  wood: TreePine,
+  coal: Box,
   veg_meal: Salad,
   non_veg_meal: Utensils,
 };
